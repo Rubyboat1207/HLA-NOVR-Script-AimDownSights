@@ -56,31 +56,53 @@ pickup_ev = ListenToGameEvent('physgun_pickup', function(info)
     DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0, nil, nil)
 end, nil)
 
-local OldFOV = 90 -- Initialize the OldFOV global variable
+local sights_zoom = 30
 local sights_vm_x = -5.15 -- viewmodel offset for aiming down sights
 local sights_vm_y = 3 -- viewmodel offset for aiming down sights
 local sights_vm_z = 2 -- viewmodel offset for aiming down sights
+local sights_move_speed = 40 -- speed diff for aiming sights
 
 function aimsights()
     local player = Entities:GetLocalPlayer()
+    OldFOV = cvar_getf("fov_desired");
 
-    -- When aiming down sights, store the current FOV in OldFOV and set the new FOV
-    SendToConsole("fov_desired " .. (OldFOV - 50))
+
+    -- Toggle Commands
     SendToConsole("bind mouse2 \"unaimsights\"")
-    SendToConsole("viewmodel_offset_x " .. sights_vm_x)
-    SendToConsole("viewmodel_offset_y " .. sights_vm_y)
-    SendToConsole("viewmodel_offset_z " .. sights_vm_z)
+
+    -- Set Fov to zoom
+    cvar_setf("fov_desired", cvar_getf("fov_desired") - sights_zoom);
+
+    -- Set viewmodel offsets
+    cvar_setf("viewmodel_offset_x", sights_vm_x);
+    cvar_setf("viewmodel_offset_y", sights_vm_y);
+    cvar_setf("viewmodel_offset_z", sights_vm_z);
+
+    -- Set Move Speeds
+    cvar_setf("cl_forwardspeed", cvar_getf("cl_forwardspeed") - sights_move_speed)
+    cvar_setf("cl_backspeed", cvar_getf("cl_backspeed") - sights_move_speed)
+    cvar_setf("cl_sidespeed", cvar_getf("cl_sidespeed") - sights_move_speed)
 end
 
 function unaimsights()
-    SendToConsole("fov_desired " .. (OldFOV))
+
+    -- Toggle Commands
     SendToConsole("bind mouse2 \"aimsights\"")
-    SendToConsole("viewmodel_offset_x " .. 0)
-    SendToConsole("viewmodel_offset_y " .. 0)
-    SendToConsole("viewmodel_offset_z " .. 0)
+
+    -- Reset FOV
+    cvar_setf("fov_desired", cvar_getf("fov_desired") + sights_zoom);
+    
+    -- Reset Viewmodel Offsets
+    cvar_setf("viewmodel_offset_x", 0);
+    cvar_setf("viewmodel_offset_y", 0);
+    cvar_setf("viewmodel_offset_z", 0);
+
+    -- Reset Move Speeds
+    cvar_setf("cl_forwardspeed", cvar_getf("cl_forwardspeed") + sights_move_speed)
+    cvar_setf("cl_backspeed", cvar_getf("cl_backspeed") + sights_move_speed)
+    cvar_setf("cl_sidespeed", cvar_getf("cl_sidespeed") + sights_move_speed)
 end
 
--- Register the function with the Convars commands for aiming down sights and returning to normal view
 Convars:RegisterCommand("aimsights", aimsights, "Toggle aiming down sights", 0)
 Convars:RegisterCommand("unaimsights", unaimsights, "Toggle returning to normal view", 0)
 
