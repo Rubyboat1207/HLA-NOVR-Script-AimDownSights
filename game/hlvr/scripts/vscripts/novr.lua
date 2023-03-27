@@ -56,6 +56,34 @@ pickup_ev = ListenToGameEvent('physgun_pickup', function(info)
     DoEntFireByInstanceHandle(ent, "RunScriptFile", "useextra", 0, nil, nil)
 end, nil)
 
+local OldFOV = 90 -- Initialize the OldFOV global variable
+local sights_vm_x = -5.15 -- viewmodel offset for aiming down sights
+local sights_vm_y = 3 -- viewmodel offset for aiming down sights
+local sights_vm_z = 2 -- viewmodel offset for aiming down sights
+
+function aimsights()
+    local player = Entities:GetLocalPlayer()
+
+    -- When aiming down sights, store the current FOV in OldFOV and set the new FOV
+    SendToConsole("fov_desired " .. (OldFOV - 50))
+    SendToConsole("bind mouse2 \"unaimsights\"")
+    SendToConsole("viewmodel_offset_x " .. sights_vm_x)
+    SendToConsole("viewmodel_offset_y " .. sights_vm_y)
+    SendToConsole("viewmodel_offset_z " .. sights_vm_z)
+end
+
+function unaimsights()
+    SendToConsole("fov_desired " .. (OldFOV))
+    SendToConsole("bind mouse2 \"aimsights\"")
+    SendToConsole("viewmodel_offset_x " .. 0)
+    SendToConsole("viewmodel_offset_y " .. 0)
+    SendToConsole("viewmodel_offset_z " .. 0)
+end
+
+-- Register the function with the Convars commands for aiming down sights and returning to normal view
+Convars:RegisterCommand("aimsights", aimsights, "Toggle aiming down sights", 0)
+Convars:RegisterCommand("unaimsights", unaimsights, "Toggle returning to normal view", 0)
+
 Convars:RegisterCommand("useextra", function()
     local player = Entities:GetLocalPlayer()
     if not player:IsUsePressed() then
@@ -165,7 +193,7 @@ player_spawn_ev = ListenToGameEvent('player_activate', function(info)
         SendToConsole("bind F5 \"save quick\"")
         SendToConsole("bind F9 \"load quick\"")
         SendToConsole("bind M \"map startup\"")
-        SendToConsole("bind MOUSE2 \"\"")
+        SendToConsole("bind mouse2 \"aimsights\"")
         SendToConsole("cl_forwardspeed 60;cl_backspeed 60;cl_sidespeed 60")
         SendToConsole("alias -crouch \"-duck;cl_forwardspeed 60;cl_backspeed 60;cl_sidespeed 60\"")
         SendToConsole("alias +crouch \"+duck;cl_forwardspeed 80;cl_backspeed 80;cl_sidespeed 80\"")
