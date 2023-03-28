@@ -61,7 +61,3 @@ end
 
 Convars:RegisterCommand("aimsights", aimsights, "Toggle aiming down sights", 0)
 Convars:RegisterCommand("unaimsights", unaimsights, "Toggle returning to normal view", 0)
-
-player_spawn_ev = ListenToGameEvent('player_activate', function(info)
-    SendToConsole("bind mouse2 \"aimsights\"")
-end)

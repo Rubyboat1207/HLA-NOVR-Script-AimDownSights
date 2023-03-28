@@ -190,6 +190,8 @@ player_spawn_ev = ListenToGameEvent('player_activate', function(info)
         SendToConsole("combine_grenade_timer 4")
         SendToConsole("sk_max_grenade 1")
         SendToConsole("sv_gravity 500")
+        SendToConsole("bind mouse2 \"aimsights\"")
+
 
         ent = Entities:FindByClassname(nil, "item_healthcharger_reservoir")
         while ent do
